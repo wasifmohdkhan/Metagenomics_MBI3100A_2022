@@ -1,0 +1,137 @@
+---
+title: "Lab_10_Metagenomics_MBI3100A_2022_Tutorial"
+output: html_document
+date: "2022-11-12"
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document.
+Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents.
+For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+You can embed an R code chunk like this:
+
+# Install required libraries
+
+Installing these libraries may take some time.
+Try to update all other dependencies when prompted (type "a" and enter).
+
+```{r}
+
+if (!require("BiocManager")) install.packages("BiocManager")
+
+if (!require("phyloseq")) BiocManager::install("phyloseq")
+
+if (!require("ggplot2")) install.packages("ggplot2")
+
+```
+
+# Load Libraries
+
+```{r}
+library(phyloseq)
+library(ggplot2)
+
+```
+
+# List of packages available in phyloseq
+
+Phyloseq come with preloaded datasets.
+The datasets can be explored using the following commands.
+The column named "Item" contains the list of all the datasets available in phyloseq package
+
+```{r}
+phyloseq_datasets = data(package = "phyloseq")
+phyloseq_datasets$results
+```
+
+# Readable data table in Rmarkdown
+
+To print a matrix/dataframe/vector in nice tabular format, use the command as.datafrme with pipe option ( %\>%) as shown in the example below.
+This provides a better view for matrix or vector type data without changing the underlying data structure.
+
+```{r}
+phyloseq_datasets$results %>% as.data.frame()
+```
+
+```{r}
+# To load the GlobalPatterns dataset
+data(GlobalPatterns)
+```
+
+```{r}
+GlobalPatterns
+
+```
+
+# Interpretation
+
+GlobalPatterns is a phyloseq object which contains 1 out_table, 1 sample_data table, 1 taxonomy table and 1 phylogenetic tree.
+
+We can access the different data type of data and table using following commands
+
+```{r}
+otu_table()
+sample_data()
+tax_table()
+phy_tree()
+```
+
+# Question: How many samples are there in the 'GlobalPatterns' data set? (1 mark)
+
+``` md
+Answer: 26
+```
+
+# Access the OTU table from a dataset
+
+```{r}
+otu_table(GlobalPatterns) %>%  head()
+```
+
+Read the table with as.data.frame( )
+
+```{r}
+otu_table(GlobalPatterns) %>%  head() %>% as.data.frame()
+```
+
+```{r}
+sample_data(GlobalPatterns)
+```
+
+# Access the sample data table and the column content from a dataset
+
+```{r}
+# To access the variables in the column 'SampleType'
+# The column 'SampleType' is of class factor so get the levels using the command
+sample_data(GlobalPatterns)$SampleType %>% levels()
+```
+
+Read with as.data.frame
+
+```{r}
+sample_data(GlobalPatterns)$SampleType %>% levels() %>% as.data.frame()
+```
+
+# How many sample types are available under the SampleType column?
+
+``` md
+Answer: 9, "Feces", "Freshwater", "Freshwater (creek)", "Mock", "Ocean"     "Sediment (estuary)", "Skin", "Soil", "Tongue"
+```
+
+```{r}
+tax_table(GlobalPatterns) %>% head() %>% as.data.frame()
+```
+
+```{r}
+plot_bar(GlobalPatterns, fill = "Phylum")
+```

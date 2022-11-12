@@ -1,0 +1,116 @@
+---
+title: "Lab_10_Metagenomics_MBI3100A_2022_Assignment"
+output: html_document
+date: "2022-11-12"
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document.
+Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents.
+For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+You can embed an R code chunk like this:
+
+# Install required libraries
+
+Installing these libraries may take some time.
+Try to update all other dependencies when prompted (type "a" and enter).
+
+```{r}
+
+if (!require("BiocManager")) install.packages("BiocManager")
+
+if (!require("phyloseq")) BiocManager::install("phyloseq")
+
+if (!require("ggplot2")) install.packages("ggplot2")
+
+if (!require("DT")) install.packages("DT")
+
+```
+
+# Load Libraries
+
+```{r}
+library(phyloseq)
+library(ggplot2)
+library(DT)
+
+```
+
+# List of packages available in phyloseq
+
+Phyloseq come with preloaded datasets.
+The datasets can be explored using the following commands.
+The column named "Item" contains the list of all the datasets available in phyloseq package
+
+```{r}
+phyloseq_datasets = data(package = "phyloseq")
+phyloseq_datasets$results
+```
+
+```{r}
+# To load the GlobalPatterns dataset
+data(GlobalPatterns)
+```
+
+```{r}
+GlobalPatterns
+
+```
+
+# Question: How many samples are there in the 'GlobalPatterns' data set? (1 mark)
+
+``` md
+```
+
+# Access the OTU table from a dataset
+
+```{r}
+otu_table(GlobalPatterns) %>%  head()
+```
+
+# Readable data table in Rmarkdown
+
+To print a matrix or data table in nice tabular format, use the command DT::datatable( ) as shown in the example below.
+Ignore the warning and wait for a few seconds.
+Click the window labelled as datatables or html-widget.
+
+```{r}
+otu_table(GlobalPatterns) %>% DT::datatable( )
+
+```
+
+### Question: Load the "soilrep" data and notedown the number of samples? (1 mark)
+
+```{r}
+data("soilrep")
+soilrep
+```
+
+# Access the sample data associated with a data
+
+```{r}
+sample_data(soilrep) %>% DT::datatable( )
+```
+
+# How many treatment types are available under the Treatment column?
+
+```{r}
+# Make a new variable which contains the sample information for soilrep data
+soilrep_sample_data = sample_data(soilrep)
+soilrep_sample_data
+```
+
+```{r}
+# The column 'Treatment' is of class factor so get the levels using the command
+levels(soilrep_sample_data$Treatment)
+```
