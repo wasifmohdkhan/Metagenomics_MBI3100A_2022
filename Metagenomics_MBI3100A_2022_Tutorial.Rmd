@@ -31,7 +31,11 @@ if (!require("BiocManager")) install.packages("BiocManager")
 
 if (!require("phyloseq")) BiocManager::install("phyloseq")
 
-if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("tidyverse")) install.packages("tidyverse")
+
+if (!require("DT")) install.packages("DT")
+
+if (!require("dendextend")) install.packages("dendextend")
 
 ```
 
@@ -40,7 +44,9 @@ if (!require("ggplot2")) install.packages("ggplot2")
 ```{r}
 library(phyloseq)
 library(ggplot2)
-
+library(dplyr)
+library(DT)
+library(dendextend)
 ```
 
 # List of packages available in phyloseq
@@ -56,11 +62,11 @@ phyloseq_datasets$results
 
 # Readable data table in Rmarkdown
 
-To print a matrix/dataframe/vector in nice tabular format, use the command as.datafrme with pipe option ( %\>%) as shown in the example below.
+To print a matrix/dataframe/vector in nice tabular format, use the command as.data.frme with pipe option ( %\>%) as shown in the example below.
 This provides a better view for matrix or vector type data without changing the underlying data structure.
 
 ```{r}
-phyloseq_datasets$results %>% as.data.frame()
+phyloseq_datasets$results %>% DT::datatable()
 ```
 
 ```{r}
@@ -80,10 +86,10 @@ GlobalPatterns is a phyloseq object which contains 1 out_table, 1 sample_data ta
 We can access the different data type of data and table using following commands
 
 ```{r}
-otu_table()
-sample_data()
-tax_table()
-phy_tree()
+# otu_table()
+# sample_data()
+# tax_table()
+# phy_tree()
 ```
 
 # Question: How many samples are there in the 'GlobalPatterns' data set? (1 mark)
@@ -101,11 +107,11 @@ otu_table(GlobalPatterns) %>%  head()
 Read the table with as.data.frame( )
 
 ```{r}
-otu_table(GlobalPatterns) %>%  head() %>% as.data.frame()
+otu_table(GlobalPatterns)[1:5, 1:5]
 ```
 
 ```{r}
-sample_data(GlobalPatterns)
+sample_data(GlobalPatterns) %>% DT::datatable()
 ```
 
 # Access the sample data table and the column content from a dataset
@@ -129,9 +135,237 @@ Answer: 9, "Feces", "Freshwater", "Freshwater (creek)", "Mock", "Ocean"     "Sed
 ```
 
 ```{r}
-tax_table(GlobalPatterns) %>% head() %>% as.data.frame()
+tax_table(GlobalPatterns) %>% head() %>% DT::datatable()
+```
+
+
+```{r}
+tax_table(GlobalPatterns) %>% head()
 ```
 
 ```{r}
-plot_bar(GlobalPatterns, fill = "Phylum")
+GP_tutorial_1 <- subset_taxa(GlobalPatterns, Species!="NA")
+GP_tutorial_1
 ```
+
+# Import data
+
+We will combine a phyloseq object using otu_table, sample_data and taxonomy file.
+Will will read these three file and then combine them to make a phyloseq object to work with them,
+
+
+
+```{r}
+#data_dir = 
+```
+
+## OTU table
+
+```{r}
+# To import otus column as rownames, as required by phyloseq
+GP_sp_tutorial_otu_table = read.table("./tutorial_files/GP_sp_tutorial_otu_table_df.csv",
+           sep = "\t",
+           header =  T,
+           row.names = "otus") 
+GP_sp_tutorial_otu_table[1:5, 1:5]
+```
+
+## Sample data
+
+```{r}
+# Import with sampleid column as rownames, as required by phyloseq
+GP_sp_tutorial_sample_data = read.table("./tutorial_files/GP_sp_tutorial_sample_data_df.csv",
+           sep = "\t", header =  T,
+           row.names = "sampleid") 
+GP_sp_tutorial_sample_data %>% head()
+```
+
+## Taxonomy table
+
+```{r}
+# To import otus column as rownames, as required by phyloseq
+GP_sp_tutorial_tax_table = read.table("./tutorial_files/GP_sp_tutorial_tax_table_df.csv",
+           sep = "\t",
+           header =  T,
+           row.names = "otus") 
+GP_sp_tutorial_tax_table %>% head()
+
+```
+
+## In order to read the OTU table as phyloseq object
+
+```{r}
+my_OTU_table = otu_table(GP_sp_tutorial_otu_table, taxa_are_rows = TRUE)
+my_OTU_table %>% head()
+```
+
+### Similarly to read sample data and taxonomy table as phyloseq objects
+
+```{r}
+my_Sample_data = sample_data(GP_sp_tutorial_sample_data)
+my_Sample_data %>% head()
+```
+
+```{r}
+# the taxonomy table is required in matrix format
+my_tax_table = tax_table(as.matrix(GP_sp_tutorial_tax_table)) 
+my_tax_table %>% head()
+```
+
+## Combine to make a phyloseq object
+
+```{r}
+my_physeq = phyloseq(my_OTU_table, my_Sample_data, my_tax_table)
+my_physeq
+```
+
+## Basic plot
+
+```{r}
+ p = plot_bar(my_physeq, fill = "Species")
+ p + theme(legend.position="none")
+```
+
+
+
+
+
+```{r}
+ p = plot_bar(my_physeq, x= "Phylum", fill = "Phylum", facet_grid=SampleOrigin~.)
+ p + theme(legend.position="none") + geom_bar(stat = "identity")
+```
+
+```{r}
+# To convert to relative abundance
+my_physeq_r  = transform_sample_counts(my_physeq, function(x) x / sum(x) )
+# Keep the taxa which have a mean values at least 1e-5
+my_physeq_rf = filter_taxa(my_physeq_r, function(x) mean(x) > 1e-5, TRUE)
+my_physeq_rf
+```
+Now the number of remaining taxa after filtering low abundance taxa is 511 out of 1413 in the full dataset.
+
+## plot and compare the relative abundance
+```{r}
+phyloseq::plot_bar(my_physeq_rf , fill = "Phylum") +
+  geom_bar(aes(color = Phylum, fill = Phylum), stat = "identity", position = "stack") +
+  labs(x = "Samples", y = "Relative Abundance\n") +
+  facet_wrap(~ SampleOrigin, scales = "free")
+```
+# Hierarchical clustering
+```{r}
+#Extract OTU table 
+ps_rel_otu <- data.frame(phyloseq::otu_table(my_physeq_rf))
+ps_rel_otu <- t(ps_rel_otu) # transpose the table (required by vegdist )
+#compute Bray-curtis distance
+bc_dist <- vegan::vegdist(ps_rel_otu, method = "bray")
+as.matrix(bc_dist)[1:5, 1:5]
+```
+```{r}
+#Save as dendrogram
+ward <- as.dendrogram(hclust(bc_dist, method = "ward.D2"))
+
+#Plot
+plot(ward)
+```
+# A nicer plot with color coding
+```{r}
+#Provide color codes
+meta <- data.frame(phyloseq::sample_data(my_physeq_rf))
+colorCode <- c(`Freshwater` = "#F8766D", Human = "#00BFC4" )
+labels_colors(ward) <- colorCode[meta$SampleOrigin][order.dendrogram(ward)]
+#Plot
+plot(ward)
+```
+
+
+```{r}
+plot_richness(my_physeq, x="SampleOrigin", measures=c("Observed", "Shannon"), color = "SampleOrigin") +
+  geom_boxplot() +
+  theme_classic() +
+  theme(strip.background = element_blank(), axis.text.x.bottom = element_text(angle = -90))
+```
+# Identifying the level of significane for the diversity between Feces and Freshwater
+```{r}
+# 
+my_alph_div <- data.frame(
+  "Observed" = phyloseq::estimate_richness(my_physeq, measures = "Observed"),
+  "Shannon" = phyloseq::estimate_richness(my_physeq, measures = "Shannon"),
+  "SampleOrigin" = phyloseq::sample_data(my_physeq)$SampleOrigin)
+head(my_alph_div)
+```
+
+# Check the level of significance
+```{r}
+#Wilcoxon test for Shannon diversity for categories in SampleOrigin
+wilcox.test(Shannon ~ SampleOrigin, data = my_alph_div, exact = FALSE, conf.int = TRUE)
+```
+p-value is ~0.02 which is less than 0.05, Hence we can accept the alternative hypothesis which means that the Shannon diversity is significantly different between Freshwater and Feces samples.
+
+# Beta diversity
+```{r}
+dist = phyloseq::distance(my_physeq, method="bray")
+ordination = ordinate(my_physeq, method="PCoA", distance=dist)
+plot_ordination(my_physeq, ordination, color="SampleOrigin") + 
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  stat_ellipse(linetype = 2)
+```
+
+It shows that the between sample diversity is very high between Freshwater and very low between Feces samples
+
+
+# Agglomerate taxa at Class level (required by plot_heatmap option)
+```{r}
+my_physeq_rf_glom = tax_glom(my_physeq_rf, taxrank="Class")
+```
+
+```{r}
+plot_heatmap(my_physeq_rf_glom, low = "yellow", high = "red", na.value = "white",taxa.label = "Class") +
+  facet_grid(~SampleOrigin, scales = "free_x")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

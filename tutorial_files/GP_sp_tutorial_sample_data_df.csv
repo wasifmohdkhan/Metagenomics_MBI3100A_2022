@@ -1,0 +1,11 @@
+sampleid	SampleOrigin	X.SampleID	Primer	Final_Barcode	Barcode_truncated_plus_T	Barcode_full_length	SampleType	Description
+M31Plmr	Human	M31Plmr	ILBC_07	AATCGT	ACGATT	CGAGTCACGAT	Skin	M3, Day 1, right palm, whole body study
+M11Plmr	Human	M11Plmr	ILBC_08	ACACAC	GTGTGT	GCCATAGTGTG	Skin	M1, Day 1, right palm, whole body study 
+F21Plmr	Human	F21Plmr	ILBC_09	ACACAT	ATGTGT	GTAGACATGTG	Skin	F1, Day 1,  right palm, whole body study 
+M31Tong	Human	M31Tong	ILBC_10	ACACGA	TCGTGT	TGTGGCTCGTG	Tongue	M3, Day 1, tongue, whole body study 
+M11Tong	Human	M11Tong	ILBC_11	ACACGG	CCGTGT	TAGACACCGTG	Tongue	M1, Day 1, tongue, whole body study 
+LMEpi24M	Freshwater	LMEpi24M	ILBC_13	ACACTG	CAGTGT	CATGAACAGTG	Freshwater	Lake Mendota Minnesota, 24 meter epilimnion 
+SLEpi20M	Freshwater	SLEpi20M	ILBC_15	ACAGAG	CTCTGT	AGCCGACTCTG	Freshwater	Sparkling Lake Wisconsin, 20 meter eplimnion
+AQC1cm	Freshwater	AQC1cm	ILBC_16	ACAGCA	TGCTGT	GACCACTGCTG	Freshwater (creek)	Allequash Creek, 0-1cm depth
+AQC4cm	Freshwater	AQC4cm	ILBC_17	ACAGCT	AGCTGT	CAAGCTAGCTG	Freshwater (creek)	Allequash Creek, 3-4 cm depth
+AQC7cm	Freshwater	AQC7cm	ILBC_18	ACAGTG	CACTGT	ATGAAGCACTG	Freshwater (creek)	Allequash Creek, 6-7 cm depth
