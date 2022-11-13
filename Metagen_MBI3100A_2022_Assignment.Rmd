@@ -1,9 +1,10 @@
 ---
 title: "Lab_10_Metagenomics_MBI3100A_2022_Assignment"
-output: html_document
+output:
+  pdf_document: default
 date: "2022-11-12"
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: sentence
 ---
 
