@@ -139,13 +139,12 @@ Answer: 9, "Feces", "Freshwater", "Freshwater (creek)", "Mock", "Ocean"     "Sed
 tax_table(GlobalPatterns) %>% head() %>% DT::datatable()
 ```
 
-
 ```{r}
 tax_table(GlobalPatterns) %>% head()
 ```
 
 ```{r}
-GP_tutorial_1 <- subset_taxa(GlobalPatterns, Species!="NA")
+GP_tutorial_1 = subset_taxa(GlobalPatterns, Species!="NA")
 GP_tutorial_1
 ```
 
@@ -153,8 +152,6 @@ GP_tutorial_1
 
 We will combine a phyloseq object using otu_table, sample_data and taxonomy file.
 Will will read these three file and then combine them to make a phyloseq object to work with them,
-
-
 
 ```{r}
 #data_dir = 
@@ -219,6 +216,14 @@ my_tax_table %>% head()
 my_physeq = phyloseq(my_OTU_table, my_Sample_data, my_tax_table)
 my_physeq
 ```
+## Explore the catagories in a sample variable eg SampleType
+```{r}
+sample_data(my_physeq)$SampleType %>% as.factor %>% levels()
+```
+```{r}
+sample_data(my_physeq)$SampleOrigin %>% as.factor %>% levels()
+```
+
 
 ## Basic plot
 
@@ -227,15 +232,11 @@ my_physeq
  p + theme(legend.position="none")
 ```
 
-
-
-
-
 ```{r}
  p = plot_bar(my_physeq, x= "Phylum", fill = "Phylum", facet_grid=SampleOrigin~.)
  p + theme(legend.position="none") + geom_bar(stat = "identity")
 ```
-
+# Relative abundance and filtering
 ```{r}
 # To convert to relative abundance
 my_physeq_r  = transform_sample_counts(my_physeq, function(x) x / sum(x) )
@@ -243,41 +244,47 @@ my_physeq_r  = transform_sample_counts(my_physeq, function(x) x / sum(x) )
 my_physeq_rf = filter_taxa(my_physeq_r, function(x) mean(x) > 1e-5, TRUE)
 my_physeq_rf
 ```
+
 Now the number of remaining taxa after filtering low abundance taxa is 511 out of 1413 in the full dataset.
 
 ## plot and compare the relative abundance
+
 ```{r}
 phyloseq::plot_bar(my_physeq_rf , fill = "Phylum") +
   geom_bar(aes(color = Phylum, fill = Phylum), stat = "identity", position = "stack") +
   labs(x = "Samples", y = "Relative Abundance\n") +
   facet_wrap(~ SampleOrigin, scales = "free")
 ```
+
 # Hierarchical clustering
+
 ```{r}
 #Extract OTU table 
-ps_rel_otu <- data.frame(phyloseq::otu_table(my_physeq_rf))
-ps_rel_otu <- t(ps_rel_otu) # transpose the table (required by vegdist )
+ps_rel_otu = data.frame(phyloseq::otu_table(my_physeq))
+ps_rel_otu = t(ps_rel_otu) # transpose the table (required by vegdist )
 #compute Bray-curtis distance
-bc_dist <- vegan::vegdist(ps_rel_otu, method = "bray")
+bc_dist = vegan::vegdist(ps_rel_otu, method = "bray")
 as.matrix(bc_dist)[1:5, 1:5]
 ```
+
 ```{r}
 #Save as dendrogram
-ward <- as.dendrogram(hclust(bc_dist, method = "ward.D2"))
+ward = as.dendrogram(hclust(bc_dist, method = "ward.D2"))
 
 #Plot
 plot(ward)
 ```
+
 # A nicer plot with color coding
+
 ```{r}
 #Provide color codes
-meta <- data.frame(phyloseq::sample_data(my_physeq_rf))
-colorCode <- c(`Freshwater` = "#F8766D", Human = "#00BFC4" )
-labels_colors(ward) <- colorCode[meta$SampleOrigin][order.dendrogram(ward)]
+meta = data.frame(phyloseq::sample_data(my_physeq))
+colorCode = c(`Freshwater` = "#F8766D", Human = "#00BFC4" )
+labels_colors(ward) = colorCode[meta$SampleOrigin][order.dendrogram(ward)]
 #Plot
 plot(ward)
 ```
-
 
 ```{r}
 plot_richness(my_physeq, x="SampleOrigin", measures=c("Observed", "Shannon"), color = "SampleOrigin") +
@@ -285,10 +292,12 @@ plot_richness(my_physeq, x="SampleOrigin", measures=c("Observed", "Shannon"), co
   theme_classic() +
   theme(strip.background = element_blank(), axis.text.x.bottom = element_text(angle = -90))
 ```
+
 # Identifying the level of significane for the diversity between Feces and Freshwater
+
 ```{r}
 # 
-my_alph_div <- data.frame(
+my_alph_div = data.frame(
   "Observed" = phyloseq::estimate_richness(my_physeq, measures = "Observed"),
   "Shannon" = phyloseq::estimate_richness(my_physeq, measures = "Shannon"),
   "SampleOrigin" = phyloseq::sample_data(my_physeq)$SampleOrigin)
@@ -296,13 +305,16 @@ head(my_alph_div)
 ```
 
 # Check the level of significance
+
 ```{r}
 #Wilcoxon test for Shannon diversity for categories in SampleOrigin
 wilcox.test(Shannon ~ SampleOrigin, data = my_alph_div, exact = FALSE, conf.int = TRUE)
 ```
-p-value is ~0.02 which is less than 0.05, Hence we can accept the alternative hypothesis which means that the Shannon diversity is significantly different between Freshwater and Feces samples.
+
+p-value is \~0.02 which is less than 0.05, Hence we can accept the alternative hypothesis which means that the Shannon diversity is significantly different between Freshwater and Feces samples.
 
 # Beta diversity
+
 ```{r}
 dist = phyloseq::distance(my_physeq, method="bray")
 ordination = ordinate(my_physeq, method="PCoA", distance=dist)
@@ -314,8 +326,8 @@ plot_ordination(my_physeq, ordination, color="SampleOrigin") +
 
 It shows that the between sample diversity is very high between Freshwater and very low between Feces samples
 
-
 # Agglomerate taxa at Class level (required by plot_heatmap option)
+
 ```{r}
 my_physeq_rf_glom = tax_glom(my_physeq_rf, taxrank="Class")
 ```
@@ -324,49 +336,3 @@ my_physeq_rf_glom = tax_glom(my_physeq_rf, taxrank="Class")
 plot_heatmap(my_physeq_rf_glom, low = "yellow", high = "red", na.value = "white",taxa.label = "Class") +
   facet_grid(~SampleOrigin, scales = "free_x")
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -14,12 +14,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This is an R Markdown document.
-Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents.
-For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
-You can embed an R code chunk like this:
+```{r}
+# clear the R environment
+rm(list = ls())
+```
 
 # Install required libraries
 
@@ -32,9 +30,11 @@ if (!require("BiocManager")) install.packages("BiocManager")
 
 if (!require("phyloseq")) BiocManager::install("phyloseq")
 
-if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("tidyverse")) install.packages("tidyverse")
 
 if (!require("DT")) install.packages("DT")
+
+if (!require("dendextend")) install.packages("dendextend")
 
 ```
 
@@ -43,75 +43,93 @@ if (!require("DT")) install.packages("DT")
 ```{r}
 library(phyloseq)
 library(ggplot2)
+library(dplyr)
 library(DT)
-
+library(dendextend)
 ```
 
-# List of packages available in phyloseq
+# Data import
 
-Phyloseq come with preloaded datasets.
-The datasets can be explored using the following commands.
-The column named "Item" contains the list of all the datasets available in phyloseq package
+### Questin 1: Import the three files named as 'GP_sp_assignment_otu_table_df.csv', 'GP_sp_assignment_sample_data_df.csv', and 'GP_sp_assignment_tax_table_df.csv' and make a phyloseq object named 'asgmt_physeq'? (2 mark)
+
+Please provide the correct file/folder path
 
 ```{r}
-phyloseq_datasets = data(package = "phyloseq")
-phyloseq_datasets$results
+GP_sp_assignment_otu_table = read.table("./assignment_files/GP_sp_assignment_otu_table_df.csv",
+           sep = "\t",
+           header =  T,
+           row.names = "otus")
+my_OTU_table = otu_table(GP_sp_assignment_otu_table, taxa_are_rows = TRUE)
+GP_sp_assignment_sample_data = read.table("./assignment_files/GP_sp_assignment_sample_data_df.csv",
+           sep = "\t", header =  T,
+           row.names = "sampleid")
+my_Sample_data = sample_data(GP_sp_assignment_sample_data)
+GP_sp_assignment_tax_table = read.table("./assignment_files/GP_sp_assignment_tax_table_df.csv",
+           sep = "\t",
+           header =  T,
+           row.names = "otus")
+my_tax_table = tax_table(as.matrix(GP_sp_assignment_tax_table)) 
+
+asgmt_physeq = phyloseq(my_OTU_table, my_Sample_data, my_tax_table)
 ```
+
+### Print asgmt_physeq
 
 ```{r}
-# To load the GlobalPatterns dataset
-data(GlobalPatterns)
+print(asgmt_physeq)
 ```
 
-```{r}
-GlobalPatterns
-
-```
-
-# Question: How many samples are there in the 'GlobalPatterns' data set? (1 mark)
+### Question 2: How many taxa, samples, and sample vairables are there in asgmt_physeq? (1mark)
 
 ``` md
 ```
 
-# Access the OTU table from a dataset
+### Question 3: List the catagories present in the sample variable "SampleOrigin". (1 mark)
 
 ```{r}
-otu_table(GlobalPatterns) %>%  head()
+sample_data(asgmt_physeq)$SampleOrigin %>% as.factor %>% levels()
 ```
 
-# Readable data table in Rmarkdown
-
-To print a matrix or data table in nice tabular format, use the command DT::datatable( ) as shown in the example below.
-Ignore the warning and wait for a few seconds.
-Click the window labelled as datatables or html-widget.
+### Question 4: Generate a bar plot for sample vs abudance and facet it for the catagories in SampleOrigin (1 mark)
 
 ```{r}
-otu_table(GlobalPatterns) %>% DT::datatable( )
-
+ p = plot_bar(asgmt_physeq, x= "Phylum", fill = "Phylum", facet_grid=SampleOrigin~.)
+ p + theme(legend.position="none") + geom_bar(stat = "identity")
 ```
 
-### Question: Load the "soilrep" data and notedown the number of samples? (1 mark)
+### Question 5: Based on the plot generated in question 4, name all the phylum which big difference in abundance between "Feces" and "Freshwater" samples? (1 mark)
+
+``` md
+```
+
+### Transform the absolute abundance into relative abundance and filter the taxa which have mean relative abundance less than 0.0001
 
 ```{r}
-data("soilrep")
-soilrep
+# To convert to relative abundance
+asgmt_physeq_r  = transform_sample_counts(asgmt_physeq, function(x) x / sum(x) )
+# Keep the taxa which have a mean values at least 0.0001
+asgmt_physeq_rf = filter_taxa(asgmt_physeq_r, function(x) mean(x) > 0.0001, TRUE)
+asgmt_physeq_rf
 ```
 
-# Access the sample data associated with a data
+### Question 6: How many taxa are left after the above filtering?
+
+``` md
+```
+
+#Extract OTU table
 
 ```{r}
-sample_data(soilrep) %>% DT::datatable( )
+
+ps_rel_otu = data.frame(phyloseq::otu_table(asgmt_physeq))
+
+ps_rel_otu = t(ps_rel_otu) # transpose the table (required by vegdist )
 ```
 
-# How many treatment types are available under the Treatment column?
-
-```{r}
-# Make a new variable which contains the sample information for soilrep data
-soilrep_sample_data = sample_data(soilrep)
-soilrep_sample_data
-```
+#### Options availabe for hclust
 
 ```{r}
-# The column 'Treatment' is of class factor so get the levels using the command
-levels(soilrep_sample_data$Treatment)
+?hclust
 ```
+
+### Question 7: Generate a Hierarchical clustering plot
