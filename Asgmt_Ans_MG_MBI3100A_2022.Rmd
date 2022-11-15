@@ -1,5 +1,5 @@
 ---
-title: "Lab_10_Metagenomics_MBI3100A_2022_Assignment"
+title: "Lab_10_Metagenomics_MBI3100A_2022_Assignment_Answers"
 output:
   pdf_document: default
 date: "2022-11-12"

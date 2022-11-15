@@ -1,0 +1,191 @@
+---
+title: "Lab_10_Metagenomics_MBI3100A_2022_Assignment_Questions"
+output:
+  pdf_document: default
+date: "2022-11-12"
+editor_options:
+  markdown:
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+# clear the R environment
+rm(list = ls())
+```
+
+# Install required libraries
+
+Installing these libraries may take some time.
+Try to update all other dependencies when prompted (type "a" and enter).
+
+```{r}
+
+if (!require("BiocManager")) install.packages("BiocManager")
+
+if (!require("phyloseq")) BiocManager::install("phyloseq")
+
+if (!require("microbiomeMarker")) BiocManager::install("microbiomeMarkera")
+
+if (!require("tidyverse")) install.packages("tidyverse")
+
+if (!require("dendextend")) install.packages("dendextend")
+
+```
+
+# Load Libraries
+
+```{r}
+library(phyloseq)
+library(ggplot2)
+library(dplyr)
+library(dendextend)
+library(microbiomeMarker)
+```
+
+# Data import
+
+### Question 1: Import the three files named as 'GP_sp_assignment_otu_table_df.csv', 'GP_sp_assignment_sample_data_df.csv', and 'GP_sp_assignment_tax_table_df.csv' and make a phyloseq object named 'asgmt_physeq'? (2 points)
+
+Please provide the correct file/folder path
+
+```{r}
+
+```
+
+### Print asgmt_physeq
+
+```{r}
+
+```
+
+### Question 2: How many taxa, samples, and sample vairables are there in asgmt_physeq? (1 point)
+
+``` md
+```
+
+### Question 3: List the catagories present in the sample variable "SampleOrigin". (1 point)
+
+```{r}
+
+```
+
+### Question 4: Generate a bar plot at "Phylum" level for sample vs abudance and facet it for the catagories in SampleOrigin (1 point)
+
+```{r}
+
+```
+
+### Question 5: Based on the plot generated in question 4, name all the phylum which big difference in abundance between "Feces" and "Freshwater" samples? (1 point)
+
+``` md
+```
+
+### Transform the absolute abundance into relative abundance and filter the taxa which have mean relative abundance less than 0.0001
+
+```{r}
+# To convert to relative abundance
+
+# Keep the taxa which have a mean values at least 0.0001
+
+```
+
+### Question 6: How many taxa are left after the above filtering? (1 point)
+
+``` md
+```
+
+# For question 7 to 12, use dataset 'asgmt_physeq'.
+
+### Question 7: Generate a Hierarchical clustering plot using the distacne "ward.D2". (2 points)
+
+#### It will be a four step process
+
+#### Step1: Extract OTU table as data frame
+
+```{r}
+
+```
+
+#### Step2: Transpose the table (required by vegdist package)
+
+```{r}
+# transpose the table (required by vegdist)
+
+```
+
+#### Step3: Compute Bray-Curtis dissimilarity
+
+```{r}
+#compute Bray-Curtis dissimilarity
+
+```
+
+#### Step4: Save as dendrogram
+
+```{r}
+#Save as dendrogram
+
+
+#Plot
+
+```
+
+### Question 8: Plot for alpha diversity using two measures, "Observed" and "Shannon". (1 points)
+
+```{r}
+
+```
+
+### Question 9: Apply wilcox.test to see if the Observed diversity is significantly different for SampleOrigin. (2 points)
+
+#### Step 1: Make a dataframe to combine the outputs of Observed and SampleOrigin.
+
+```{r}
+# Make a dataframe to combine the ouputs of Observed, Shannon and SampleOrigin
+
+```
+
+#### Step 2: Check the significance level for wilcox.test
+
+```{r}
+#Wilcoxon test for Shannon diversity for categories in SampleOrigin
+
+```
+
+##### Note down the p-value? is the difference significant i.e is p-value less than 0.05?
+
+``` md
+```
+
+### Question 10: Make a PCoA plot using the "bray" method as distance the beta diversity. (1 point)
+
+```{r}
+
+```
+
+### Question 11: Apply DESeq2 method to identify the differentially abundant taxa based on SampleOrigin column. (1 point)
+
+```{r}
+set.seed(2345)
+# run_deseq2 command run the program deseq2 to identify DA taxa
+# Running this command takes a few seconds
+
+```
+
+### Question 12: Plot the differentially abundant taxa identified by deseq2 method . (1 point)
+
+```{r}
+
+```
+
+#### Bonus Question: plot a heatmap for the differentially abundant taxa identified by deseq2 method 
+
+```{r}
+
+```
