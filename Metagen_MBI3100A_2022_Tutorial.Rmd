@@ -32,11 +32,13 @@ if (!require("BiocManager")) install.packages("BiocManager")
 
 if (!require("phyloseq")) BiocManager::install("phyloseq")
 
+if (!require("microbiomeMarker")) BiocManager::install("microbiomeMarkera")
+
 if (!require("tidyverse")) install.packages("tidyverse")
 
-if (!require("DT")) install.packages("DT")
-
 if (!require("dendextend")) install.packages("dendextend")
+
+
 
 ```
 
@@ -46,8 +48,8 @@ if (!require("dendextend")) install.packages("dendextend")
 library(phyloseq)
 library(ggplot2)
 library(dplyr)
-library(DT)
 library(dendextend)
+library(microbiomeMarker)
 ```
 
 # List of packages available in phyloseq
@@ -67,7 +69,7 @@ To print a matrix/dataframe/vector in nice tabular format, use the command as.da
 This provides a better view for matrix or vector type data without changing the underlying data structure.
 
 ```{r}
-phyloseq_datasets$results %>% DT::datatable()
+phyloseq_datasets$results
 ```
 
 ```{r}
@@ -112,7 +114,7 @@ otu_table(GlobalPatterns)[1:5, 1:5]
 ```
 
 ```{r}
-sample_data(GlobalPatterns) %>% DT::datatable()
+sample_data(GlobalPatterns) %>% head()
 ```
 
 # Access the sample data table and the column content from a dataset
@@ -333,6 +335,32 @@ my_physeq_rf_glom = tax_glom(my_physeq_rf, taxrank="Class")
 ```
 
 ```{r}
-plot_heatmap(my_physeq_rf_glom, low = "yellow", high = "red", na.value = "white",taxa.label = "Class") +
+phyloseq::plot_heatmap(my_physeq_rf_glom, low = "yellow", high = "red", na.value = "white",taxa.label = "Class") +
   facet_grid(~SampleOrigin, scales = "free_x")
 ```
+# differential abundance analysis using lefse
+```{r}
+set.seed(2345)
+my_physeq_deseq2 = run_deseq2(my_physeq,
+                            group = "SampleOrigin",
+                            transform = "log10p", # log transformation
+                            norm = "rarefy",  # common method for normalization
+                            p_adjust = "BH", # adjusted p-value methods
+                            )
+my_physeq_deseq2
+```
+```{r}
+marker_table(my_physeq_deseq2) %>% head()
+```
+
+
+```{r}
+p_abd <- microbiomeMarker::plot_abundance(my_physeq_deseq2, group = "SampleOrigin")
+p_abd
+```
+
+```{r}
+microbiomeMarker::plot_heatmap(my_physeq_deseq2, group = "SampleOrigin")
+```
+
+
