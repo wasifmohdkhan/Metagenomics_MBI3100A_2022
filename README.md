@@ -1,2 +1,0 @@
-# Metagenomics_MBI3100A_2022
-Metagenomics_MBI3100A_2022
