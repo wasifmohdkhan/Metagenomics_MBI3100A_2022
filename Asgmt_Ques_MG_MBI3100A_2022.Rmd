@@ -55,35 +55,43 @@ library(microbiomeMarker)
 Please provide the correct file/folder path
 
 ```{r}
+# input files
 
 ```
 
 ### Print asgmt_physeq
 
 ```{r}
+# Print
 
 ```
 
 ### Question 2: How many taxa, samples, and sample variables are there in asgmt_physeq? (1 point)
 
 ``` md
+# Ans
 ```
 
 ### Question 3: List the catagories present in the sample variable "SampleOrigin". (1 point)
 
 ```{r}
+# Ans
+
 
 ```
 
 ### Question 4: Generate a bar plot at "Phylum" level for sample vs abundance and facet it for the categories in SampleOrigin (1 point)
 
 ```{r}
+# Ans
+
 
 ```
 
 ### Question 5: Based on the plot generated in question 4, name all the phylum which have a big difference in abundance between "Feces" and "Freshwater" samples? (1 point)
 
 ``` md
+# Ans
 ```
 
 ### Transform the absolute abundance into relative abundance and filter the taxa which have mean relative abundance less than 0.0001
@@ -98,6 +106,7 @@ Please provide the correct file/folder path
 ### Question 6: How many taxa are left after the above filtering? (1 point)
 
 ``` md
+# Ans
 ```
 
 # For question 7 to 12, use dataset 'asgmt_physeq'.
@@ -109,6 +118,7 @@ Please provide the correct file/folder path
 #### Step1: Extract OTU table as data frame
 
 ```{r}
+# OTU as data frame
 
 ```
 
@@ -139,6 +149,8 @@ Please provide the correct file/folder path
 ### Question 8: Plot for alpha diversity using two measures, "Observed" and "Shannon". (1 points)
 
 ```{r}
+# Ans
+
 
 ```
 
@@ -161,17 +173,21 @@ Please provide the correct file/folder path
 ##### Note down the p-value? is the difference significant i.e is p-value less than 0.05?
 
 ``` md
+# Ans
 ```
 
 ### Question 10: Make a PCoA plot using the "bray" method as distance for beta diversity. (1 point)
 
 ```{r}
+# Ans
 
 ```
 
 ### Question 11: Apply DESeq2 method to identify the differentially abundant taxa based on SampleOrigin column. (1 point)
 
 ```{r}
+# Ans
+
 set.seed(2345)
 # run_deseq2 command run the program deseq2 to identify DA taxa
 # Running this command takes a few seconds
@@ -181,11 +197,14 @@ set.seed(2345)
 ### Question 12: Plot the differentially abundant taxa identified by deseq2 method . (1 point)
 
 ```{r}
+# Ans
+
 
 ```
 
-#### Bonus Question: plot a heatmap for the differentially abundant taxa identified by deseq2 method 
+#### Bonus Question: plot a heatmap for the differentially abundant taxa identified by deseq2 method
 
 ```{r}
+# Ans
 
 ```

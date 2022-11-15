@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-```{r}
+```{r, message=FALSE}
 # clear the R environment
 rm(list = ls())
 ```
