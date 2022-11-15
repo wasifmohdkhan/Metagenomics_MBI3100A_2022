@@ -24,7 +24,7 @@ rm(list = ls())
 Installing these libraries may take some time.
 Try to update all other dependencies when prompted (type "a" and enter).
 
-```{r}
+```{r, message=FALSE}
 
 if (!require("BiocManager")) install.packages("BiocManager")
 

@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Installing these libraries may take some time.
 Try to update all other dependencies when prompted (type "a" and enter).
 
-```{r}
+```{r, message=FALSE}
 
 if (!require("BiocManager")) install.packages("BiocManager")
 
@@ -49,7 +49,7 @@ library(microbiomeMarker)
 
 # List of packages available in phyloseq
 
-Phyloseq come with preloaded datasets.
+Phyloseq comes with preloaded datasets.
 The datasets can be explored using the following commands.
 The column named "Item" contains the list of all the datasets available in phyloseq package
 
