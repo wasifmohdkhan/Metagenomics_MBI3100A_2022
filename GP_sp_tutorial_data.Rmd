@@ -109,10 +109,10 @@ write.table(GP_sp_tutorial_tax_table_df, "./tutorial_files/GP_sp_tutorial_tax_ta
             quote = F)
 ```
 ```{r}
-GP_sp_tutorial_phy_tree = phy_tree(GP_sp_tutorial)
-GP_sp_tutorial_phy_tree
-
-ape::write.tree(GP_sp_tutorial_phy_tree, "./tutorial_files/GP_sp_tutorial_phy_tree.tree")
+# GP_sp_tutorial_phy_tree = phy_tree(GP_sp_tutorial)
+# GP_sp_tutorial_phy_tree
+# 
+# ape::write.tree(GP_sp_tutorial_phy_tree, "./tutorial_files/GP_sp_tutorial_phy_tree.tree")
 
 ```
 

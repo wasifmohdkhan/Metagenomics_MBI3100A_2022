@@ -14,12 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This is an R Markdown document.
-Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents.
-For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
-You can embed an R code chunk like this:
+**Acknowledgement:** The commands and datasets used in is tutorial are adapted from the [phyloseq website](https://joey711.github.io/phyloseq/) and [Yan Hui Microbiome tutorial](https://www.yanh.org/2021/01/01/microbiome-r/).
 
 # Install required libraries
 
@@ -63,15 +58,6 @@ phyloseq_datasets = data(package = "phyloseq")
 phyloseq_datasets$results
 ```
 
-# Readable data table in Rmarkdown
-
-To print a matrix/dataframe/vector in nice tabular format, use the command as.data.frme with pipe option ( %\>%) as shown in the example below.
-This provides a better view for matrix or vector type data without changing the underlying data structure.
-
-```{r}
-phyloseq_datasets$results
-```
-
 ```{r}
 # To load the GlobalPatterns dataset
 data(GlobalPatterns)
@@ -82,32 +68,38 @@ GlobalPatterns
 
 ```
 
-# Interpretation
+# 1. Data exploration
 
 GlobalPatterns is a phyloseq object which contains 1 out_table, 1 sample_data table, 1 taxonomy table and 1 phylogenetic tree.
 
 We can access the different data type of data and table using following commands
 
 ```{r}
-# otu_table()
-# sample_data()
-# tax_table()
-# phy_tree()
+# otu_table(GlobalPatterns) %>% head()
+# sample_data(GlobalPatterns) %>% head()
+# tax_table(GlobalPatterns) %>% head()
+# phy_tree(GlobalPatterns) %>% head()
 ```
 
-# Question: How many samples are there in the 'GlobalPatterns' data set? (1 mark)
+### For example: How many samples are there in the 'GlobalPatterns' data set?
+
+```{r}
+sample_data(GlobalPatterns)
+```
 
 ``` md
 Answer: 26
 ```
 
-# Access the OTU table from a dataset
+### Access the OTU table from a dataset
+
+##### Since the OTU tables are very big we use the command head to read the top 6 rows of a matrix/dataframe
 
 ```{r}
 otu_table(GlobalPatterns) %>%  head()
 ```
 
-Read the table with as.data.frame( )
+##### Another way to see the content of a big table
 
 ```{r}
 otu_table(GlobalPatterns)[1:5, 1:5]
@@ -117,7 +109,7 @@ otu_table(GlobalPatterns)[1:5, 1:5]
 sample_data(GlobalPatterns) %>% head()
 ```
 
-# Access the sample data table and the column content from a dataset
+### Access the sample data table and the column content from a dataset
 
 ```{r}
 # To access the variables in the column 'SampleType'
@@ -125,17 +117,19 @@ sample_data(GlobalPatterns) %>% head()
 sample_data(GlobalPatterns)$SampleType %>% levels()
 ```
 
-Read with as.data.frame
+#### Read with as.data.frame to see the results in a tabular format
 
 ```{r}
 sample_data(GlobalPatterns)$SampleType %>% levels() %>% as.data.frame()
 ```
 
-# How many sample types are available under the SampleType column?
+### How many sample types are available under the SampleType column?
 
 ``` md
 Answer: 9, "Feces", "Freshwater", "Freshwater (creek)", "Mock", "Ocean"     "Sediment (estuary)", "Skin", "Soil", "Tongue"
 ```
+
+### Explore the taxonomy table
 
 ```{r}
 tax_table(GlobalPatterns) %>% head() %>% DT::datatable()
@@ -145,12 +139,7 @@ tax_table(GlobalPatterns) %>% head() %>% DT::datatable()
 tax_table(GlobalPatterns) %>% head()
 ```
 
-```{r}
-GP_tutorial_1 = subset_taxa(GlobalPatterns, Species!="NA")
-GP_tutorial_1
-```
-
-# Import data
+# 2. Importing data in R as phyloseq object
 
 We will combine a phyloseq object using otu_table, sample_data and taxonomy file.
 Will will read these three file and then combine them to make a phyloseq object to work with them,
@@ -192,19 +181,21 @@ GP_sp_tutorial_tax_table %>% head()
 
 ```
 
-## In order to read the OTU table as phyloseq object
+#### In order to read the OTU table as phyloseq object we need to use the following command
 
 ```{r}
 my_OTU_table = otu_table(GP_sp_tutorial_otu_table, taxa_are_rows = TRUE)
 my_OTU_table %>% head()
 ```
 
-### Similarly to read sample data and taxonomy table as phyloseq objects
+#### Similarly to read sample data and taxonomy table as phyloseq objects
 
 ```{r}
 my_Sample_data = sample_data(GP_sp_tutorial_sample_data)
 my_Sample_data %>% head()
 ```
+
+#### Reading taxonomy file as phyloseq object
 
 ```{r}
 # the taxonomy table is required in matrix format
@@ -212,22 +203,28 @@ my_tax_table = tax_table(as.matrix(GP_sp_tutorial_tax_table))
 my_tax_table %>% head()
 ```
 
-## Combine to make a phyloseq object
+### Combine to make a phyloseq object.
 
 ```{r}
 my_physeq = phyloseq(my_OTU_table, my_Sample_data, my_tax_table)
 my_physeq
 ```
-## Explore the catagories in a sample variable eg SampleType
+
+'my_physeq' is now a new phyloseq object which cotains the data (OTU table, sample data, and taxonomy table) that we just imported.
+
+#### Explore the catagories in a sample variable eg SampleType
+
 ```{r}
 sample_data(my_physeq)$SampleType %>% as.factor %>% levels()
 ```
+
 ```{r}
 sample_data(my_physeq)$SampleOrigin %>% as.factor %>% levels()
 ```
 
+# 3. Data visualization and formatting
 
-## Basic plot
+### Basic plot
 
 ```{r}
  p = plot_bar(my_physeq, fill = "Species")
@@ -238,7 +235,12 @@ sample_data(my_physeq)$SampleOrigin %>% as.factor %>% levels()
  p = plot_bar(my_physeq, x= "Phylum", fill = "Phylum", facet_grid=SampleOrigin~.)
  p + theme(legend.position="none") + geom_bar(stat = "identity")
 ```
-# Relative abundance and filtering
+
+## Relative abundance and filtering
+
+Some of the analysis provide better results when we work with relative abundance data (frequency table for OTU numbers).
+To avoid the spurious results, we can also filter some taxa which have very low abundance.
+
 ```{r}
 # To convert to relative abundance
 my_physeq_r  = transform_sample_counts(my_physeq, function(x) x / sum(x) )
@@ -249,7 +251,9 @@ my_physeq_rf
 
 Now the number of remaining taxa after filtering low abundance taxa is 511 out of 1413 in the full dataset.
 
-## plot and compare the relative abundance
+## Plot and compare the relative abundance
+
+Notice the taxa abundant in only one group.
 
 ```{r}
 phyloseq::plot_bar(my_physeq_rf , fill = "Phylum") +
@@ -258,16 +262,57 @@ phyloseq::plot_bar(my_physeq_rf , fill = "Phylum") +
   facet_wrap(~ SampleOrigin, scales = "free")
 ```
 
-# Hierarchical clustering
+### An example of how to subset the data based on a condition
+
+Here we will remove all the taxa which have "NA" in the Species column.
+i.e.
+Species is unknown for these OTUs
 
 ```{r}
-#Extract OTU table 
-ps_rel_otu = data.frame(phyloseq::otu_table(my_physeq))
-ps_rel_otu = t(ps_rel_otu) # transpose the table (required by vegdist )
-#compute Bray-curtis distance
-bc_dist = vegan::vegdist(ps_rel_otu, method = "bray")
+GP_tutorial_1 = subset_taxa(GlobalPatterns, Species!="NA")
+GP_tutorial_1
+```
+
+### Agglomerate taxa at Class level (required by plot_heatmap option)
+
+```{r}
+my_physeq_glom = tax_glom(my_physeq, taxrank="Class")
+```
+
+```{r}
+phyloseq::plot_heatmap(my_physeq_glom, low = "yellow", high = "red", na.value = "white",taxa.label = "Class") +
+  facet_grid(~SampleOrigin, scales = "free_x")
+```
+
+# 4. Hierarchical clustering
+
+```{r}
+#Extract OTU table as data frame
+my_physeq_otu_df = phyloseq::otu_table(my_physeq) %>%  data.frame()
+my_physeq_otu_df[1:5, 1:5]
+```
+
+```{r}
+# transpose the table (required by vegdist)
+my_physeq_otu_df_t = t(my_physeq_otu_df)
+my_physeq_otu_df_t[1:5, 1:5]
+```
+
+```{r}
+#compute Bray-Curtis dissimilarity
+bc_dist = vegan::vegdist(my_physeq_otu_df_t, method = "bray")
+bc_dist
+```
+
+```{r}
+# View the distance matrix as matrix
 as.matrix(bc_dist)[1:5, 1:5]
 ```
+
+The distance table records the Bray_Curtice distance between all samples.
+For example, the distance between M31Plmr and M11Plmr is 0.8201904.
+Next this matrix will be used for plotting the dendrogram.
+'hclust' is the command for hierarchical clustering on distance matrix
 
 ```{r}
 #Save as dendrogram
@@ -277,7 +322,9 @@ ward = as.dendrogram(hclust(bc_dist, method = "ward.D2"))
 plot(ward)
 ```
 
-# A nicer plot with color coding
+### A nicer dendrogram plot with color coding
+
+Below is the code to color the samples based on their catagory in SampleOrigin.
 
 ```{r}
 #Provide color codes
@@ -288,6 +335,10 @@ labels_colors(ward) = colorCode[meta$SampleOrigin][order.dendrogram(ward)]
 plot(ward)
 ```
 
+# 5. Alpha diversity
+
+Now we will plot for alpha diversity using two measures, c("Observed", "Shannon"),
+
 ```{r}
 plot_richness(my_physeq, x="SampleOrigin", measures=c("Observed", "Shannon"), color = "SampleOrigin") +
   geom_boxplot() +
@@ -295,10 +346,10 @@ plot_richness(my_physeq, x="SampleOrigin", measures=c("Observed", "Shannon"), co
   theme(strip.background = element_blank(), axis.text.x.bottom = element_text(angle = -90))
 ```
 
-# Identifying the level of significane for the diversity between Feces and Freshwater
+### Identifying the level of significance for the diversity between Feces and Freshwater
 
 ```{r}
-# 
+# Make a dataframe to combine the ouputs of Observed, Shannon and SampleOrigin
 my_alph_div = data.frame(
   "Observed" = phyloseq::estimate_richness(my_physeq, measures = "Observed"),
   "Shannon" = phyloseq::estimate_richness(my_physeq, measures = "Shannon"),
@@ -306,20 +357,23 @@ my_alph_div = data.frame(
 head(my_alph_div)
 ```
 
-# Check the level of significance
+### Check the level of significance
 
 ```{r}
 #Wilcoxon test for Shannon diversity for categories in SampleOrigin
-wilcox.test(Shannon ~ SampleOrigin, data = my_alph_div, exact = FALSE, conf.int = TRUE)
+my_alph_div_wt = wilcox.test(Shannon ~ SampleOrigin, data = my_alph_div, exact = FALSE, conf.int = TRUE)
+print(my_alph_div_wt$p.value)
 ```
 
-p-value is \~0.02 which is less than 0.05, Hence we can accept the alternative hypothesis which means that the Shannon diversity is significantly different between Freshwater and Feces samples.
+p-value = 0.6761.
+Here the p-value is more than 0.05 If the p-value in the output is less than 0.05, it means the difference is significant.
+In that case we can accept the alternative hypothesis which means that the diversity is significantly different between Freshwater and Human samples.
 
-# Beta diversity
+# 6. Beta diversity
 
 ```{r}
-dist = phyloseq::distance(my_physeq, method="bray")
-ordination = ordinate(my_physeq, method="PCoA", distance=dist)
+#dist = phyloseq::distance(my_physeq, method="jaccard")
+ordination = ordinate(my_physeq, method="PCoA", distance="jaccard")
 plot_ordination(my_physeq, ordination, color="SampleOrigin") + 
   theme_classic() +
   theme(strip.background = element_blank()) +
@@ -328,19 +382,12 @@ plot_ordination(my_physeq, ordination, color="SampleOrigin") +
 
 It shows that the between sample diversity is very high between Freshwater and very low between Feces samples
 
-# Agglomerate taxa at Class level (required by plot_heatmap option)
+# 7. Differential abundance (DA) analysis using deseq2
 
-```{r}
-my_physeq_rf_glom = tax_glom(my_physeq_rf, taxrank="Class")
-```
-
-```{r}
-phyloseq::plot_heatmap(my_physeq_rf_glom, low = "yellow", high = "red", na.value = "white",taxa.label = "Class") +
-  facet_grid(~SampleOrigin, scales = "free_x")
-```
-# differential abundance analysis using lefse
 ```{r}
 set.seed(2345)
+# run_deseq2 command run the program deseq2 to identify DA taxa
+# Running this command takes a few seconds
 my_physeq_deseq2 = run_deseq2(my_physeq,
                             group = "SampleOrigin",
                             transform = "log10p", # log transformation
@@ -349,18 +396,23 @@ my_physeq_deseq2 = run_deseq2(my_physeq,
                             )
 my_physeq_deseq2
 ```
+
+### Plot the differentially abundant taxa identified by deseq2 method
+
 ```{r}
 marker_table(my_physeq_deseq2) %>% head()
 ```
 
-
 ```{r}
-p_abd <- microbiomeMarker::plot_abundance(my_physeq_deseq2, group = "SampleOrigin")
-p_abd
+plot_DA =  microbiomeMarker::plot_abundance(my_physeq_deseq2, group = "SampleOrigin")
+plot_DA 
 ```
 
 ```{r}
-microbiomeMarker::plot_heatmap(my_physeq_deseq2, group = "SampleOrigin")
+plot_DA_hmap = microbiomeMarker::plot_heatmap(my_physeq_deseq2, group = "SampleOrigin")
+plot_DA_hmap
 ```
 
-
+```{r}
+otu_table(my_physeq_deseq2) %>% head()
+```

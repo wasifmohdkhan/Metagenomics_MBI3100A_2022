@@ -50,7 +50,7 @@ library(dendextend)
 
 # Data import
 
-### Questin 1: Import the three files named as 'GP_sp_assignment_otu_table_df.csv', 'GP_sp_assignment_sample_data_df.csv', and 'GP_sp_assignment_tax_table_df.csv' and make a phyloseq object named 'asgmt_physeq'? (2 mark)
+### Question 1: Import the three files named as 'GP_sp_assignment_otu_table_df.csv', 'GP_sp_assignment_sample_data_df.csv', and 'GP_sp_assignment_tax_table_df.csv' and make a phyloseq object named 'asgmt_physeq'? (2 points)
 
 Please provide the correct file/folder path
 
@@ -79,25 +79,25 @@ asgmt_physeq = phyloseq(my_OTU_table, my_Sample_data, my_tax_table)
 print(asgmt_physeq)
 ```
 
-### Question 2: How many taxa, samples, and sample vairables are there in asgmt_physeq? (1mark)
+### Question 2: How many taxa, samples, and sample vairables are there in asgmt_physeq? (1 point)
 
 ``` md
 ```
 
-### Question 3: List the catagories present in the sample variable "SampleOrigin". (1 mark)
+### Question 3: List the catagories present in the sample variable "SampleOrigin". (1 point)
 
 ```{r}
 sample_data(asgmt_physeq)$SampleOrigin %>% as.factor %>% levels()
 ```
 
-### Question 4: Generate a bar plot for sample vs abudance and facet it for the catagories in SampleOrigin (1 mark)
+### Question 4: Generate a bar plot for sample vs abudance and facet it for the catagories in SampleOrigin (1 point)
 
 ```{r}
  p = plot_bar(asgmt_physeq, x= "Phylum", fill = "Phylum", facet_grid=SampleOrigin~.)
  p + theme(legend.position="none") + geom_bar(stat = "identity")
 ```
 
-### Question 5: Based on the plot generated in question 4, name all the phylum which big difference in abundance between "Feces" and "Freshwater" samples? (1 mark)
+### Question 5: Based on the plot generated in question 4, name all the phylum which big difference in abundance between "Feces" and "Freshwater" samples? (1 point)
 
 ``` md
 ```
@@ -112,7 +112,7 @@ asgmt_physeq_rf = filter_taxa(asgmt_physeq_r, function(x) mean(x) > 0.0001, TRUE
 asgmt_physeq_rf
 ```
 
-### Question 6: How many taxa are left after the above filtering?
+### Question 6: How many taxa are left after the above filtering? (1 point)
 
 ``` md
 ```
@@ -126,10 +126,80 @@ ps_rel_otu = data.frame(phyloseq::otu_table(asgmt_physeq))
 ps_rel_otu = t(ps_rel_otu) # transpose the table (required by vegdist )
 ```
 
-#### Options availabe for hclust
+#### To explore the options available for hclust
+
+run the command '?h
+clust' to see the options available under method
+
+# For question 7 to 12, use dataset 'asgmt_physeq'. 
+
+### Question 7: Generate a Hierarchical clustering plot using the distacne "ward.D2". (2 points)
+
+#### It will be a four step process
+
+#### Step1: Extract OTU table as data frame
 
 ```{r}
-?hclust
+
 ```
 
-### Question 7: Generate a Hierarchical clustering plot
+#### Step2: Transpose the table (required by vegdist package)
+
+```{r}
+
+```
+
+#### Step3: Compute Bray-Curtis dissimilarity
+
+```{r}
+
+```
+
+#### Step4: Save as dendrogram
+
+```{r}
+
+```
+
+### Question 8: Plot for alpha diversity using two measures, "Observed" and "Shannon". (1 points)
+
+```{r}
+
+```
+
+### Question 9: Apply wilcox.test to see if the Observed diversity is significantly different for SampleOrigin. (2 points)
+
+#### Step 1: Make a dataframe to combine the outputs of Observed and SampleOrigin.
+
+```{r}
+
+```
+
+#### Step 2: Check the significance level for wilcox.test
+
+```{r}
+
+```
+
+##### Note down the p-value
+
+``` md
+```
+
+### Question 10: Make a PCoA plot using the "bray" method as distance  the beta diversity. (1 point)
+
+```{r}
+
+```
+
+### Question 11: Apply DESeq2 method to identify the differentially abundant taxa   based on SampleOrigin column. (1 point)
+
+```{r}
+
+```
+
+### Question 12: Plot the differentially abundant taxa identified by deseq2 method . (1 point)
+
+```{r}
+
+```
