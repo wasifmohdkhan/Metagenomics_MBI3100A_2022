@@ -269,8 +269,8 @@ i.e.
 Species is unknown for these OTUs
 
 ```{r}
-GP_tutorial_1 = subset_taxa(GlobalPatterns, Species!="NA")
-GP_tutorial_1
+GP_subset_1 = subset_taxa(GlobalPatterns, Species!="NA")
+GP_subset_1
 ```
 
 ### Agglomerate taxa at Class level (required by plot_heatmap option)
@@ -367,12 +367,11 @@ print(my_alph_div_wt$p.value)
 
 p-value = 0.6761.
 Here the p-value is more than 0.05 If the p-value in the output is less than 0.05, it means the difference is significant.
-In that case we can accept the alternative hypothesis which means that the diversity is significantly different between Freshwater and Human samples.
+In this case we can **NOT** accept the alternative hypothesis which means that the diversity is **NOT** significantly different between Freshwater and Human samples.
 
 # 6. Beta diversity
 
 ```{r}
-#dist = phyloseq::distance(my_physeq, method="jaccard")
 ordination = ordinate(my_physeq, method="PCoA", distance="jaccard")
 plot_ordination(my_physeq, ordination, color="SampleOrigin") + 
   theme_classic() +
@@ -414,5 +413,5 @@ plot_DA_hmap
 ```
 
 ```{r}
-otu_table(my_physeq_deseq2) %>% head()
+#otu_table(my_physeq_deseq2) %>% head()
 ```

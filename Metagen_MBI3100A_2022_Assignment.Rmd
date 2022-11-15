@@ -30,9 +30,9 @@ if (!require("BiocManager")) install.packages("BiocManager")
 
 if (!require("phyloseq")) BiocManager::install("phyloseq")
 
-if (!require("tidyverse")) install.packages("tidyverse")
+if (!require("microbiomeMarker")) BiocManager::install("microbiomeMarkera")
 
-if (!require("DT")) install.packages("DT")
+if (!require("tidyverse")) install.packages("tidyverse")
 
 if (!require("dendextend")) install.packages("dendextend")
 
@@ -44,8 +44,8 @@ if (!require("dendextend")) install.packages("dendextend")
 library(phyloseq)
 library(ggplot2)
 library(dplyr)
-library(DT)
 library(dendextend)
+library(microbiomeMarker)
 ```
 
 # Data import
@@ -117,21 +117,7 @@ asgmt_physeq_rf
 ``` md
 ```
 
-#Extract OTU table
-
-```{r}
-
-ps_rel_otu = data.frame(phyloseq::otu_table(asgmt_physeq))
-
-ps_rel_otu = t(ps_rel_otu) # transpose the table (required by vegdist )
-```
-
-#### To explore the options available for hclust
-
-run the command '?h
-clust' to see the options available under method
-
-# For question 7 to 12, use dataset 'asgmt_physeq'. 
+# For question 7 to 12, use dataset 'asgmt_physeq'.
 
 ### Question 7: Generate a Hierarchical clustering plot using the distacne "ward.D2". (2 points)
 
@@ -140,31 +126,43 @@ clust' to see the options available under method
 #### Step1: Extract OTU table as data frame
 
 ```{r}
-
+asgmt_physeq_otu_df = phyloseq::otu_table(asgmt_physeq) %>%  data.frame()
+asgmt_physeq_otu_df[1:5, 1:5]
 ```
 
 #### Step2: Transpose the table (required by vegdist package)
 
 ```{r}
-
+# transpose the table (required by vegdist)
+asgmt_physeq_otu_df_t = t(asgmt_physeq_otu_df)
+asgmt_physeq_otu_df_t[1:5, 1:5]
 ```
 
 #### Step3: Compute Bray-Curtis dissimilarity
 
 ```{r}
-
+#compute Bray-Curtis dissimilarity
+bc_dist = vegan::vegdist(asgmt_physeq_otu_df_t, method = "bray")
+bc_dist
 ```
 
 #### Step4: Save as dendrogram
 
 ```{r}
+#Save as dendrogram
+ward = as.dendrogram(hclust(bc_dist, method = "ward.D2"))
 
+#Plot
+plot(ward)
 ```
 
 ### Question 8: Plot for alpha diversity using two measures, "Observed" and "Shannon". (1 points)
 
 ```{r}
-
+plot_richness(asgmt_physeq, x="SampleOrigin", measures=c("Observed", "Shannon"), color = "SampleOrigin") +
+  geom_boxplot() +
+  theme_classic() +
+  theme(strip.background = element_blank(), axis.text.x.bottom = element_text(angle = -90))
 ```
 
 ### Question 9: Apply wilcox.test to see if the Observed diversity is significantly different for SampleOrigin. (2 points)
@@ -172,34 +170,60 @@ clust' to see the options available under method
 #### Step 1: Make a dataframe to combine the outputs of Observed and SampleOrigin.
 
 ```{r}
-
+# Make a dataframe to combine the ouputs of Observed, Shannon and SampleOrigin
+my_alph_div = data.frame(
+  "Observed" = phyloseq::estimate_richness(asgmt_physeq, measures = "Observed"),
+  "Shannon" = phyloseq::estimate_richness(asgmt_physeq, measures = "Shannon"),
+  "SampleOrigin" = phyloseq::sample_data(asgmt_physeq)$SampleOrigin)
+head(my_alph_div)
 ```
 
 #### Step 2: Check the significance level for wilcox.test
 
 ```{r}
-
+#Wilcoxon test for Shannon diversity for categories in SampleOrigin
+my_alph_div_wt = wilcox.test(Shannon ~ SampleOrigin, data = my_alph_div, exact = FALSE, conf.int = TRUE)
+print(my_alph_div_wt$p.value)
 ```
 
-##### Note down the p-value
+##### Note down the p-value? is the difference significant i.e is p-value less than 0.05?
 
 ``` md
 ```
 
-### Question 10: Make a PCoA plot using the "bray" method as distance  the beta diversity. (1 point)
+### Question 10: Make a PCoA plot using the "bray" method as distance the beta diversity. (1 point)
 
 ```{r}
-
+ordination = ordinate(asgmt_physeq, method="PCoA", distance="bray")
+plot_ordination(asgmt_physeq, ordination, color="SampleOrigin") + 
+  theme_classic() +
+  theme(strip.background = element_blank()) +
+  stat_ellipse(linetype = 2)
 ```
 
-### Question 11: Apply DESeq2 method to identify the differentially abundant taxa   based on SampleOrigin column. (1 point)
+### Question 11: Apply DESeq2 method to identify the differentially abundant taxa based on SampleOrigin column. (1 point)
 
 ```{r}
-
+set.seed(2345)
+# run_deseq2 command run the program deseq2 to identify DA taxa
+# Running this command takes a few seconds
+asgmt_physeq_deseq2 = run_deseq2(asgmt_physeq,
+                            group = "SampleOrigin",
+                            transform = "log10p", # log transformation
+                            norm = "rarefy",  # common method for normalization
+                            p_adjust = "BH", # adjusted p-value methods
+                            )
+asgmt_physeq_deseq2
 ```
 
 ### Question 12: Plot the differentially abundant taxa identified by deseq2 method . (1 point)
 
 ```{r}
+plot_DA =  microbiomeMarker::plot_abundance(asgmt_physeq_deseq2, group = "SampleOrigin")
+plot_DA 
+```
 
+```{r}
+plot_DA_hmap = microbiomeMarker::plot_heatmap(asgmt_physeq_deseq2, group = "SampleOrigin")
+plot_DA_hmap
 ```
