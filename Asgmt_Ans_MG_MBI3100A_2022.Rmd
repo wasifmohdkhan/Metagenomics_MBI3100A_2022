@@ -79,25 +79,25 @@ asgmt_physeq = phyloseq(my_OTU_table, my_Sample_data, my_tax_table)
 print(asgmt_physeq)
 ```
 
-### Question 2: How many taxa, samples, and sample vairables are there in asgmt_physeq? (1 point)
+### Question 2: How many taxa, samples, and sample variables are there in asgmt_physeq? (1 point)
 
 ``` md
 ```
 
-### Question 3: List the catagories present in the sample variable "SampleOrigin". (1 point)
+### Question 3: List the categories present in the sample variable "SampleOrigin". (1 point)
 
 ```{r}
 sample_data(asgmt_physeq)$SampleOrigin %>% as.factor %>% levels()
 ```
 
-### Question 4: Generate a bar plot for sample vs abudance and facet it for the catagories in SampleOrigin (1 point)
+### Question 4: Generate a bar plot for sample vs abundance and facet it for the catagories in SampleOrigin (1 point)
 
 ```{r}
  p = plot_bar(asgmt_physeq, x= "Phylum", fill = "Phylum", facet_grid=SampleOrigin~.)
  p + theme(legend.position="none") + geom_bar(stat = "identity")
 ```
 
-### Question 5: Based on the plot generated in question 4, name all the phylum which big difference in abundance between "Feces" and "Freshwater" samples? (1 point)
+### Question 5: Based on the plot generated in question 4, name all the phylum which have a big difference in abundance between "Feces" and "Freshwater" samples? (1 point)
 
 ``` md
 ```
@@ -119,7 +119,7 @@ asgmt_physeq_rf
 
 # For question 7 to 12, use dataset 'asgmt_physeq'.
 
-### Question 7: Generate a Hierarchical clustering plot using the distacne "ward.D2". (2 points)
+### Question 7: Generate a Hierarchical clustering plot using the distance "ward.D2". (2 points)
 
 #### It will be a four step process
 
@@ -191,7 +191,7 @@ print(my_alph_div_wt$p.value)
 ``` md
 ```
 
-### Question 10: Make a PCoA plot using the "bray" method as distance the beta diversity. (1 point)
+### Question 10: Make a PCoA plot using the "bray" method as distance for beta diversity. (1 point)
 
 ```{r}
 ordination = ordinate(asgmt_physeq, method="PCoA", distance="bray")

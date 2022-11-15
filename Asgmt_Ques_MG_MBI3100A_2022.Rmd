@@ -64,7 +64,7 @@ Please provide the correct file/folder path
 
 ```
 
-### Question 2: How many taxa, samples, and sample vairables are there in asgmt_physeq? (1 point)
+### Question 2: How many taxa, samples, and sample variables are there in asgmt_physeq? (1 point)
 
 ``` md
 ```
@@ -75,13 +75,13 @@ Please provide the correct file/folder path
 
 ```
 
-### Question 4: Generate a bar plot at "Phylum" level for sample vs abudance and facet it for the catagories in SampleOrigin (1 point)
+### Question 4: Generate a bar plot at "Phylum" level for sample vs abundance and facet it for the categories in SampleOrigin (1 point)
 
 ```{r}
 
 ```
 
-### Question 5: Based on the plot generated in question 4, name all the phylum which big difference in abundance between "Feces" and "Freshwater" samples? (1 point)
+### Question 5: Based on the plot generated in question 4, name all the phylum which have a big difference in abundance between "Feces" and "Freshwater" samples? (1 point)
 
 ``` md
 ```
@@ -102,7 +102,7 @@ Please provide the correct file/folder path
 
 # For question 7 to 12, use dataset 'asgmt_physeq'.
 
-### Question 7: Generate a Hierarchical clustering plot using the distacne "ward.D2". (2 points)
+### Question 7: Generate a Hierarchical clustering plot using the distance "ward.D2". (2 points)
 
 #### It will be a four step process
 
@@ -163,7 +163,7 @@ Please provide the correct file/folder path
 ``` md
 ```
 
-### Question 10: Make a PCoA plot using the "bray" method as distance the beta diversity. (1 point)
+### Question 10: Make a PCoA plot using the "bray" method as distance for beta diversity. (1 point)
 
 ```{r}
 

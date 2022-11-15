@@ -210,9 +210,9 @@ my_physeq = phyloseq(my_OTU_table, my_Sample_data, my_tax_table)
 my_physeq
 ```
 
-'my_physeq' is now a new phyloseq object which cotains the data (OTU table, sample data, and taxonomy table) that we just imported.
+'my_physeq' is now a new phyloseq object which contains the data (OTU table, sample data, and taxonomy table) that we just imported.
 
-#### Explore the catagories in a sample variable eg SampleType
+#### Explore the categories in a sample variable eg SampleType
 
 ```{r}
 sample_data(my_physeq)$SampleType %>% as.factor %>% levels()
@@ -309,7 +309,7 @@ bc_dist
 as.matrix(bc_dist)[1:5, 1:5]
 ```
 
-The distance table records the Bray_Curtice distance between all samples.
+The distance table records the Bray_Curtis distance between all samples.
 For example, the distance between M31Plmr and M11Plmr is 0.8201904.
 Next this matrix will be used for plotting the dendrogram.
 'hclust' is the command for hierarchical clustering on distance matrix
@@ -324,7 +324,7 @@ plot(ward)
 
 ### A nicer dendrogram plot with color coding
 
-Below is the code to color the samples based on their catagory in SampleOrigin.
+Below is the code to color the samples based on their category in SampleOrigin.
 
 ```{r}
 #Provide color codes
